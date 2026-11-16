@@ -1,0 +1,10 @@
+# Matriz de build do GitHub Actions — gera um .uf2 por linha
+---
+include:
+  - board: nice_nano_v2
+    shield: corne_left
+  - board: nice_nano_v2
+    shield: corne_right
+  # Firmware para limpar o pareamento BLE entre as metades (use se der problema)
+  - board: nice_nano_v2
+    shield: settings_reset
