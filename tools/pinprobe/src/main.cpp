@@ -8,6 +8,9 @@
 //      Meca com multimetro (preta no GND): saida boa = ~3.3 V.
 //   h  igual ao 'o', mas com high drive (H0H1, ~10 mA): se o suspeito sobe muito,
 //      o driver normal esta fraco ou ha carga puxando para baixo.
+//   a  TODOS os 18 pinos de sinal (inclui 115) em HIGH, drive normal: meca
+//      cada um no pad do nice!nano e na ponta do pino -> ~3.3 V.
+//   b  reinicia direto no bootloader UF2 (drive NICENANO), sem curto no RST.
 //   z  tudo em alta impedancia (para medir resistencia com a placa ligada).
 #include <Arduino.h>
 #include <Adafruit_TinyUSB.h>
@@ -66,6 +69,17 @@ void loop() {
       case 'i': inputMode(); break;
       case 'o': outputMode(false); break;
       case 'h': outputMode(true); break;
+      case 'a':
+        scanning = false; allHighZ();
+        pinMode(SRC, OUTPUT); digitalWrite(SRC, HIGH);
+        for (int i = 0; i < N; i++) { pinMode(PINS[i].num, OUTPUT); digitalWrite(PINS[i].num, HIGH); }
+        Serial.println("MODO TODOS: 18 pinos em HIGH");
+        break;
+      case 'b':
+        Serial.println("Entrando no bootloader UF2...");
+        Serial.flush(); delay(100);
+        enterUf2Dfu();
+        break;
       case 'z': scanning = false; allHighZ(); Serial.println("MODO HIGH-Z"); break;
     }
   }
