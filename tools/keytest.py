@@ -5,7 +5,11 @@ Lê o teclado direto do /dev/input (sem libs externas) e marca cada tecla
 pressionada num mapa do Corne. Enquanto roda, o teclado fica "capturado":
 as teclas NÃO digitam em lugar nenhum.
 
-Uso:  python3 tools/keytest.py
+Uso:  python3 tools/keytest.py            # as duas metades (esquerda + direita conectada)
+      python3 tools/keytest.py --left     # só a metade esquerda (24 teclas)
+      python3 tools/keytest.py --right    # metade DIREITA rodando o firmware da ESQUERDA
+                                          # (teste de bancada: as colunas vêm espelhadas e
+                                          #  o script desfaz; RSE aparece como Lower)
 Sai:  sozinho quando todas as teclas forem testadas, após 120 s sem
       apertar nada, ou Ctrl+C num terminal/SSH.
 
@@ -46,7 +50,16 @@ RIGHT = [
 LOWER_ONLY = set(range(2, 12)) | {103, 105, 106, 108}  # 1..0 e setas
 RAISE_ONLY = {12, 13, 26, 27, 41, 43}                    # - = [ ] ` \
 
-ALL_KEYS = [k for half in (LEFT, RIGHT) for row in half for k in row if k]
+# --right: o firmware da esquerda lê a matriz da direita com as colunas espelhadas
+# (pino 14 = coluna Y, mas a esquerda chama de T). Converte keycode-esquerda -> tecla-direita.
+MIRROR = {20: 21, 19: 22, 18: 23, 17: 24, 16: 25, 15: 14,
+          34: 35, 33: 36, 32: 37, 31: 38, 30: 39, 29: 40,
+          48: 49, 47: 50, 46: 51, 45: 52, 44: 53, 42: 1,
+          57: 28, 125: 100, "lower": "raise"}
+
+MODE = "right" if "--right" in sys.argv else "left" if "--left" in sys.argv else "both"
+HALVES = {"both": (LEFT, RIGHT), "left": (LEFT,), "right": (RIGHT,)}[MODE]
+ALL_KEYS = [k for half in HALVES for row in half for k in row if k]
 KEY_BY_CODE = {code: label for label, code in ALL_KEYS if isinstance(code, int)}
 
 GREEN, RED, DIM, BOLD, RESET = "\033[42;30m", "\033[41;97m", "\033[2m", "\033[1m", "\033[0m"
@@ -74,15 +87,20 @@ def cell(key, done, chatter):
 def draw(done, chatter, counts, last):
     out = ["\033[H\033[2J", f"{BOLD}Corne — teste de teclas{RESET}   "
            f"{len(done)}/{len(ALL_KEYS)} ok   (verde = ok, vermelho = repique)\n"]
-    for lrow, rrow in zip(LEFT, RIGHT):
-        left = "".join(cell(k, done, chatter) for k in lrow)
-        right = "".join(cell(k, done, chatter) for k in rrow)
-        out.append(f"  {left}     {right}\n")
+    for rows in zip(*HALVES):
+        out.append("  " + "     ".join("".join(cell(k, done, chatter) for k in row)
+                                       for row in rows) + "\n")
     out.append(f"\n  Última tecla: {last or '-'}\n")
     if chatter:
         names = ", ".join(KEY_BY_CODE.get(c, c) if isinstance(c, int) else c for c in chatter)
         out.append(f"  {RED} Repique em: {names} {RESET}  -> refazer solda do switch/diodo\n")
-    out.append(f"\n  {DIM}Lower: segure LWR + Q   |   Raise: segure RSE + H   |   Ctrl+C sai{RESET}\n")
+    if MODE == "right":
+        hint = "Raise: segure RSE + P (não use RSE + fileira do meio: atalhos BT)"
+    elif MODE == "left":
+        hint = "Lower: segure LWR + Q"
+    else:
+        hint = "Lower: segure LWR + Q   |   Raise: segure RSE + H"
+    out.append(f"\n  {DIM}{hint}   |   Ctrl+C sai{RESET}\n")
     sys.stdout.write("".join(out))
     sys.stdout.flush()
 
@@ -118,6 +136,9 @@ def main():
                     target = "raise"
                 else:
                     target = code
+                if MODE == "right":
+                    target = MIRROR.get(target, target)
+                    code = target if isinstance(target, int) else code
                 if target in last_press and (t - last_press[target]) * 1000 < CHATTER_MS:
                     chatter.add(target)
                 last_press[target] = t
