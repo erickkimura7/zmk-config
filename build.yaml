@@ -8,3 +8,8 @@ include:
   # Firmware para limpar o pareamento BLE entre as metades (use se der problema)
   - board: nice_nano_v2
     shield: settings_reset
+  # Diagnostico: esquerda com log pela USB (serial /dev/ttyACM0). Nao usar no dia a dia.
+  - board: nice_nano_v2
+    shield: corne_left
+    snippet: zmk-usb-logging
+    artifact-name: corne_left_logging
