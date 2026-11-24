@@ -57,6 +57,9 @@ MIRROR = {20: 21, 19: 22, 18: 23, 17: 24, 16: 25, 15: 14,
           48: 49, 47: 50, 46: 51, 45: 52, 44: 53, 42: 1,
           57: 28, 125: 100, "lower": "raise"}
 
+_unknown = [a for a in sys.argv[1:] if a not in ("--left", "--right")]
+if _unknown:
+    sys.exit(f"Opção desconhecida: {' '.join(_unknown)}  (use --left, --right ou nada)")
 MODE = "right" if "--right" in sys.argv else "left" if "--left" in sys.argv else "both"
 HALVES = {"both": (LEFT, RIGHT), "left": (LEFT,), "right": (RIGHT,)}[MODE]
 ALL_KEYS = [k for half in HALVES for row in half for k in row if k]
