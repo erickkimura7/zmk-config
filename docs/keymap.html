@@ -1,0 +1,343 @@
+<title>Corne do Erick</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: uma coluna; o teclado dividido é a peça central, com abas por camada,
+   busca "onde está?" logo acima, e as tabelas de consulta abaixo. */
+:root {
+  --bg: #eef0f3;
+  --surface: #ffffff;
+  --cap: #fbfbfc;
+  --cap-edge: #c9ced8;
+  --fg: #1d2330;
+  --muted: #5d6677;
+  --line: #d9dde5;
+  --base: #3f4a62;
+  --lower: #0f8a7e;
+  --raise: #c06a0a;
+  --adjust: #6d4bc8;
+  --hit: #ffe58a;
+  --hit-fg: #1d2330;
+  --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-key: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14171d; --surface: #1c2029; --cap: #252a35; --cap-edge: #3a4152;
+    --fg: #e7eaf0; --muted: #9aa3b5; --line: #2f3544;
+    --base: #a9b4cf; --lower: #3fd1c1; --raise: #f0a24a; --adjust: #a88cff;
+    --hit: #8a6d00; --hit-fg: #fff6d6; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14171d; --surface: #1c2029; --cap: #252a35; --cap-edge: #3a4152;
+  --fg: #e7eaf0; --muted: #9aa3b5; --line: #2f3544;
+  --base: #a9b4cf; --lower: #3fd1c1; --raise: #f0a24a; --adjust: #a88cff;
+  --hit: #8a6d00; --hit-fg: #fff6d6; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+.wrap { max-width: 1060px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+header h1 { font-family: var(--font-display); font-size: clamp(26px, 4vw, 36px); margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+header p { margin: 6px 0 0; color: var(--muted); max-width: 65ch; }
+.chip { font-family: var(--font-key); font-size: 12px; padding: 1px 6px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface); white-space: nowrap; }
+
+/* abas + busca */
+.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tab {
+  font: 600 14px var(--font-body); padding: 7px 14px; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--fg);
+}
+.tab[aria-selected="true"] { border-color: var(--c); background: var(--c); color: var(--bg); }
+.tab:focus-visible, .search input:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.search { display: flex; gap: 8px; align-items: center; flex: 1 1 280px; max-width: 420px; }
+.search input {
+  flex: 1; min-width: 0; font: 15px var(--font-key); padding: 8px 12px; border-radius: 8px;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--fg);
+}
+.answer { min-height: 1.5em; font-size: 14px; color: var(--muted); }
+.answer b { color: var(--fg); }
+.answer .combo { font-family: var(--font-key); color: var(--fg); }
+
+/* teclado */
+.board { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; overflow-x: auto; }
+.kb { display: grid; grid-template-columns: repeat(6, var(--k)) 34px repeat(6, var(--k)); gap: 6px; --k: 64px; width: max-content; margin: 0 auto; }
+.key {
+  height: var(--k); border-radius: 9px; background: var(--cap); border: 1px solid var(--cap-edge);
+  box-shadow: 0 2px 0 var(--cap-edge); position: relative; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-key); font-weight: 700; font-size: 15px; text-align: center; line-height: 1.1; padding: 3px;
+}
+.key .main { color: var(--c, var(--fg)); }
+.key .hold { position: absolute; bottom: 4px; left: 0; right: 0; font-size: 10px; font-weight: 500; color: var(--muted); }
+.key .dead { position: absolute; top: 3px; right: 6px; font-size: 11px; color: var(--raise); }
+.key.empty { background: transparent; box-shadow: none; border-style: dashed; opacity: .45; }
+.key.held { background: var(--c); border-color: var(--c); }
+.key.held .main, .key.held .hold { color: var(--bg); }
+.key.hit { background: var(--hit); border-color: var(--hit); }
+.key.hit .main, .key.hit .hold { color: var(--hit-fg); }
+.key small { font-size: 11px; }
+/* modo "todas": três legendas por tecla */
+.key.multi { flex-direction: column; justify-content: space-between; align-items: stretch; padding: 4px 6px; }
+.key.multi span { display: block; font-size: 11px; font-weight: 700; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.key.multi .l-base { color: var(--base); font-size: 13px; }
+.key.multi .l-lower { color: var(--lower); }
+.key.multi .l-raise { color: var(--raise); text-align: right; }
+.gap { }
+.thumbs-l { grid-column: 4 / span 3; display: contents; }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-top: 14px; font-size: 13px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--c); margin-right: 6px; vertical-align: -1px; }
+.note { text-align: center; font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+
+/* tabelas */
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+section.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; min-width: 0; }
+section.card h2 { font-family: var(--font-display); font-size: 19px; margin: 0 0 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+td { padding: 6px 4px; border-top: 1px solid var(--line); vertical-align: top; }
+tr:first-child td { border-top: 0; }
+td:first-child { font-family: var(--font-key); font-weight: 700; white-space: nowrap; width: 40%; }
+.kbd { font-family: var(--font-key); font-size: 13px; background: var(--cap); border: 1px solid var(--cap-edge); border-radius: 5px; padding: 0 5px; white-space: nowrap; }
+@media (max-width: 720px) { .kb { --k: 52px; } .key { font-size: 13px; } }
+@media (prefers-reduced-motion: no-preference) { .key { transition: background .12s, border-color .12s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Corne do Erick</h1>
+    <p>Mapa de consulta do keymap. Windows em <b>US Internacional</b>. Escolha a camada nas abas ou digite um símbolo na busca para ver onde ele fica.</p>
+  </header>
+
+  <div class="controls">
+    <div class="tabs" role="tablist" aria-label="Camadas">
+      <button class="tab" role="tab" id="tab-all" data-layer="all" style="--c: var(--fg)">Todas</button>
+      <button class="tab" role="tab" id="tab-base" data-layer="base" style="--c: var(--base)">Base</button>
+      <button class="tab" role="tab" id="tab-lower" data-layer="lower" style="--c: var(--lower)">Lower</button>
+      <button class="tab" role="tab" id="tab-raise" data-layer="raise" style="--c: var(--raise)">Raise</button>
+      <button class="tab" role="tab" id="tab-adjust" data-layer="adjust" style="--c: var(--adjust)">Lower + Raise</button>
+    </div>
+    <div class="search">
+      <input id="q" type="text" placeholder="Onde está... ex.: {  F5  ç  =>  setas" aria-label="Procurar tecla ou símbolo" autocomplete="off">
+    </div>
+  </div>
+  <div class="answer" id="answer" aria-live="polite">Dica: digite <span class="chip">{</span>, <span class="chip">F5</span>, <span class="chip">ç</span> ou <span class="chip">copiar</span>.</div>
+
+  <div class="board">
+    <div class="kb" id="kb"></div>
+    <div class="legend" id="legend"></div>
+    <p class="note" id="note"></p>
+  </div>
+
+  <div class="grid2">
+    <section class="card">
+      <h2>Acentos (US Internacional)</h2>
+      <table>
+        <tr><td>á é í ó ú</td><td><span class="kbd">'</span> e depois a letra</td></tr>
+        <tr><td>ç</td><td><span class="kbd">'</span> e depois <span class="kbd">c</span> &nbsp;ou&nbsp; <span class="kbd">AltGr</span> + <span class="kbd">,</span></td></tr>
+        <tr><td>ã õ ñ</td><td><span class="kbd">~</span> (Raise + ESC) e depois a letra</td></tr>
+        <tr><td>â ê ô</td><td><span class="kbd">^</span> (Raise + Y) e depois a letra</td></tr>
+        <tr><td>à</td><td><span class="kbd">`</span> (Raise + TAB) e depois <span class="kbd">a</span></td></tr>
+        <tr><td>ü</td><td><span class="kbd">"</span> (Shift + ') e depois <span class="kbd">u</span></td></tr>
+        <tr><td>' " ` ~ ^ sozinhos</td><td>a tecla e depois <span class="kbd">Espaço</span>. Em código isso aparece toda hora.</td></tr>
+        <tr><td>á direto</td><td><span class="kbd">AltGr</span> + <span class="kbd">a</span> (também e, i, o, u)</td></tr>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Modificadores e atalhos</h2>
+      <table>
+        <tr><td>Home row mods</td><td>Segure <span class="kbd">A S D F</span> = Win, Alt, Ctrl, Shift. Na direita, <span class="kbd">J K L ;</span> = Shift, Ctrl, Alt, Win. Tocar digita a letra.</td></tr>
+        <tr><td>Ctrl + C</td><td>Segure <span class="kbd">K</span> e toque <span class="kbd">C</span>. O modificador vem da mão oposta à letra.</td></tr>
+        <tr><td>Shift + letra</td><td>Segure <span class="kbd">J</span> (letra na esquerda) ou <span class="kbd">F</span> (letra na direita), ou use o <span class="kbd">Shift</span> do canto.</td></tr>
+        <tr><td>Caps Word</td><td>Toque <span class="kbd">CAPW</span> e digite: <span class="kbd">MINHA_CONSTANTE</span>. Desliga sozinho no espaço.</td></tr>
+        <tr><td>Selecionar texto</td><td>Segure <span class="kbd">Lower</span> + <span class="kbd">F</span> (Shift) e use as setas em H J K L.</td></tr>
+        <tr><td>Desfazer, copiar...</td><td><span class="kbd">Lower</span> + <span class="kbd">Z X C V</span> = desfazer, recortar, copiar, colar.</td></tr>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Bluetooth e USB</h2>
+      <table>
+        <tr><td>Trocar de PC</td><td><span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">A</span>…<span class="kbd">G</span> = perfil 1 a 5</td></tr>
+        <tr><td>Parear novo PC</td><td>Escolha um perfil livre e no PC adicione o dispositivo "Corne"</td></tr>
+        <tr><td>Esquecer pareamento</td><td><span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">ESC</span> apaga o perfil atual</td></tr>
+        <tr><td>Saída USB / BLE</td><td><span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">H</span> = USB, <span class="kbd">J</span> = Bluetooth. Útil para carregar no PC e digitar em outro.</td></tr>
+        <tr><td>Sono</td><td>Dorme após 15 min sem uso. Aperte uma tecla para acordar (a primeira se perde).</td></tr>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Gravar firmware</h2>
+      <table>
+        <tr><td>Esquerda</td><td><span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">Shift</span> (canto inferior esquerdo)</td></tr>
+        <tr><td>Direita</td><td><span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">CAPW</span> (canto inferior direito)</td></tr>
+        <tr><td>Depois</td><td>Aparece o drive <span class="kbd">NICENANO</span>. Copie o .uf2 da metade certa.</td></tr>
+        <tr><td>Reiniciar metade</td><td><span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">Z</span> (esq.) ou <span class="kbd">/</span> (dir.)</td></tr>
+      </table>
+    </section>
+  </div>
+</div>
+
+<script>
+// Cada camada: 3 linhas de 12 teclas + 6 de polegar. [legenda, segurar?, morta?]
+const X = null; // transparente
+const L = {
+  base: [
+    [["TAB"],["Q"],["W"],["E"],["R"],["T"],["Y"],["U"],["I"],["O"],["P"],["⌫"]],
+    [["ESC"],["A","Win"],["S","Alt"],["D","Ctrl"],["F","Shift"],["G"],["H"],["J","Shift"],["K","Ctrl"],["L","Alt"],[";","Win"],["'","",1]],
+    [["Shift"],["Z"],["X"],["C"],["V"],["B"],["N"],["M"],[","],["."],["/"],["CAPW"]],
+    [["Win"],["LOWER"],["Espaço"],["Enter"],["RAISE"],["AltGr"]],
+  ],
+  lower: [
+    [X,["1"],["2"],["3"],["4"],["5"],["6"],["7"],["8"],["9"],["0"],["Del"]],
+    [X,["Win"],["Alt"],["Ctrl"],["Shift"],X,["←"],["↓"],["↑"],["→"],X,X],
+    [X,["Desfaz"],["Recorta"],["Copia"],["Cola"],X,["Home"],["PgDn"],["PgUp"],["End"],["Ins"],X],
+    [X,X,X,X,X,X],
+  ],
+  raise: [
+    [["`","",1],["!"],["@"],["#"],["$"],["%"],["^","",1],["&"],["*"],["("],[")"],["⌫"]],
+    [["~","",1],["<"],[">"],["{"],["["],["("],[")"],["]"],["}"],["-"],["="],["|"]],
+    [X,["\\"],["_"],["+"],[":="],["=>"],[":"],[";"],['"',"",1],["'","",1],["?"],X],
+    [X,X,X,X,X,X],
+  ],
+  adjust: [
+    [["F1"],["F2"],["F3"],["F4"],["F5"],["F6"],["F7"],["F8"],["F9"],["F10"],["F11"],["F12"]],
+    [["BT ✕"],["BT1"],["BT2"],["BT3"],["BT4"],["BT5"],["USB"],["BLE"],["Vol−"],["Vol+"],["Mudo"],["PrtSc"]],
+    [["Boot"],["Reset"],X,X,X,X,["⏮"],["⏯"],["⏭"],X,["Reset"],["Boot"]],
+    [X,X,X,X,X,X],
+  ],
+};
+const COLORS = { base: "var(--base)", lower: "var(--lower)", raise: "var(--raise)", adjust: "var(--adjust)" };
+const PREFIX = { base: "", lower: "Lower + ", raise: "Raise + ", adjust: "Lower + Raise + " };
+const HELD = { lower: ["3:1"], raise: ["3:4"], adjust: ["3:1", "3:4"] };
+const NOTES = {
+  all: "Cada tecla: base (grande), Lower (verde, embaixo à esquerda) e Raise (laranja, embaixo à direita).",
+  base: "Teclas com texto pequeno embaixo: tocar = letra, segurar = modificador.",
+  lower: "Segure LOWER (polegar esquerdo do meio).",
+  raise: "Segure RAISE (polegar direito do meio). ° = tecla morta: aperte Espaço depois para sair sozinha.",
+  adjust: "Segure LOWER e RAISE juntos. Boot = gravar firmware na metade da tecla.",
+};
+// Palavras extras para a busca
+const ALIAS = {
+  "copiar": "Copia", "copy": "Copia", "colar": "Cola", "paste": "Cola", "recortar": "Recorta", "cut": "Recorta",
+  "desfazer": "Desfaz", "undo": "Desfaz", "setas": "←", "seta": "←", "esquerda": "←", "direita": "→", "cima": "↑", "baixo": "↓",
+  "delete": "Del", "apagar": "⌫", "backspace": "⌫", "bksp": "⌫", "enter": "Enter", "espaco": "Espaço", "space": "Espaço",
+  "volume": "Vol+", "mudo": "Mudo", "mute": "Mudo", "print": "PrtSc", "bootloader": "Boot", "boot": "Boot", "bluetooth": "BT1",
+  "usb": "USB", "ble": "BLE", "caps": "CAPW", "maiusculas": "CAPW", "pipe": "|", "crase": "`", "til": "~", "circunflexo": "^",
+  "aspas": '"', "apostrofo": "'", "barra": "/", "contrabarra": "\\", "walrus": ":=", "arrow": "=>",
+};
+const ACCENTS = {
+  "á": "' e depois a", "é": "' e depois e", "í": "' e depois i", "ó": "' e depois o", "ú": "' e depois u",
+  "ç": "' e depois c (ou AltGr + ,)", "ã": "Raise + ESC (~) e depois a", "õ": "Raise + ESC (~) e depois o",
+  "â": "Raise + Y (^) e depois a", "ê": "Raise + Y (^) e depois e", "ô": "Raise + Y (^) e depois o",
+  "à": "Raise + TAB (`) e depois a", "ü": "Shift + ' (\") e depois u",
+};
+
+let current = "all", hits = new Set();
+try { const s = localStorage.getItem("corne-layer"); if (s && L[s] || s === "all") current = s; } catch (e) {}
+
+function cell(layer, r, c) { return L[layer][r][c]; }
+function keyId(r, c) { return r + ":" + c; }
+
+function render() {
+  const kb = document.getElementById("kb");
+  kb.innerHTML = "";
+  const rows = [0, 1, 2];
+  rows.forEach(r => {
+    for (let c = 0; c < 12; c++) {
+      if (c === 6) kb.appendChild(Object.assign(document.createElement("div"), { className: "gap" }));
+      kb.appendChild(makeKey(r, c));
+    }
+  });
+  // polegares: colunas 4-6 e 8-10 da grade (deixa 3 vazias de cada lado)
+  for (let i = 0; i < 3; i++) kb.appendChild(Object.assign(document.createElement("div")));
+  for (let c = 0; c < 6; c++) {
+    if (c === 3) kb.appendChild(Object.assign(document.createElement("div"), { className: "gap" }));
+    kb.appendChild(makeKey(3, c));
+  }
+  document.getElementById("note").textContent = NOTES[current];
+  const legend = document.getElementById("legend");
+  legend.innerHTML = current === "all"
+    ? ["base", "lower", "raise"].map(l => `<span><i style="--c:${COLORS[l]}"></i>${l === "base" ? "Base" : l === "lower" ? "Lower" : "Raise"}</span>`).join("")
+    : "";
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.layer === current));
+}
+
+function makeKey(r, c) {
+  const el = document.createElement("div");
+  el.className = "key";
+  const id = keyId(r, c);
+  if (hits.has(id)) el.classList.add("hit");
+  if (current === "all") {
+    el.classList.add("multi");
+    const b = cell("base", r, c), lo = cell("lower", r, c), ra = cell("raise", r, c);
+    el.innerHTML = `<span class="l-base">${esc(b ? b[0] : "")}</span><span style="display:flex;justify-content:space-between;gap:4px"><span class="l-lower">${esc(lo ? lo[0] : "")}</span><span class="l-raise">${esc(ra ? ra[0] + (ra[2] ? "°" : "") : "")}</span></span>`;
+    return el;
+  }
+  el.style.setProperty("--c", COLORS[current]);
+  const k = cell(current, r, c);
+  if ((HELD[current] || []).includes(id)) {
+    el.classList.add("held");
+    el.innerHTML = `<span class="main">${r === 3 && c === 1 ? "LOWER" : "RAISE"}</span><span class="hold">segurar</span>`;
+    return el;
+  }
+  if (!k) {
+    const b = cell("base", r, c);
+    el.classList.add("empty");
+    el.innerHTML = `<span class="main" style="color:var(--muted)">${esc(b ? b[0] : "")}</span>`;
+    return el;
+  }
+  el.innerHTML = `<span class="main">${esc(k[0])}</span>` +
+    (k[1] ? `<span class="hold">${esc(k[1])}</span>` : "") +
+    (k[2] ? `<span class="dead" title="tecla morta">°</span>` : "");
+  return el;
+}
+
+function esc(s) { return String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch])); }
+
+function search(raw) {
+  hits = new Set();
+  const out = document.getElementById("answer");
+  const q0 = raw.trim();
+  if (!q0) { out.innerHTML = 'Dica: digite <span class="chip">{</span>, <span class="chip">F5</span>, <span class="chip">ç</span> ou <span class="chip">copiar</span>.'; render(); return; }
+  const lower = q0.toLowerCase();
+  if (ACCENTS[lower]) {
+    out.innerHTML = `<b>${esc(q0)}</b>: <span class="combo">${esc(ACCENTS[lower])}</span>`;
+    render(); return;
+  }
+  const want = ALIAS[lower] || q0;
+  const found = [];
+  for (const layer of ["base", "lower", "raise", "adjust"]) {
+    L[layer].forEach((row, r) => row.forEach((k, c) => {
+      if (!k) return;
+      const lab = k[0], hold = k[1] || "";
+      const exact = lab.toLowerCase() === want.toLowerCase();
+      const holdMatch = layer === "base" && hold && hold.toLowerCase() === want.toLowerCase();
+      if (exact || holdMatch) found.push({ layer, r, c, lab, hold: holdMatch });
+    }));
+  }
+  if (!found.length) { out.innerHTML = `Não achei <b>${esc(q0)}</b>. Tente o símbolo exato (ex.: <span class="chip">[</span>) ou um nome como <span class="chip">setas</span>.`; render(); return; }
+  const f = found.find(x => !x.hold) || found[0];
+  if (current !== "all" && current !== f.layer) current = f.layer;
+  found.filter(x => x.layer === f.layer).forEach(x => hits.add(keyId(x.r, x.c)));
+  const base = cell("base", f.r, f.c);
+  const combo = f.hold ? `segurar ${base[0]}` : `${PREFIX[f.layer]}${f.layer === "base" ? f.lab : base[0]}`;
+  const dead = (cell(f.layer, f.r, f.c) || [])[2] ? " — tecla morta: aperte Espaço depois" : "";
+  out.innerHTML = `<b>${esc(q0)}</b>: <span class="combo">${esc(combo)}</span>${esc(dead)}`;
+  render();
+}
+
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+  current = t.dataset.layer;
+  try { localStorage.setItem("corne-layer", current); } catch (e) {}
+  render();
+}));
+document.getElementById("q").addEventListener("input", e => search(e.target.value));
+render();
+</script>
