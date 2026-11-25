@@ -9,6 +9,25 @@ config ZMK_FORCE_DCDC_HV_OFF
       during ZMK. On clone boards without the REG0 inductor this can make the
       board unstable on battery. This option writes DCDCEN0 = 0 at boot.
 
+config ZMK_MAC_PROFILE
+    bool "Turn the Mac keymap layer on automatically for one BLE profile"
+    default y
+    depends on ZMK_BLE && (!ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL)
+    help
+      Layer state is not persisted by ZMK (lost on every deep-sleep wake), but
+      the selected BLE profile is. This activates layer ZMK_MAC_PROFILE_LAYER
+      whenever profile ZMK_MAC_PROFILE_INDEX is selected, also at boot.
+
+config ZMK_MAC_PROFILE_INDEX
+    int "BLE profile index (0-based) that is the Mac"
+    default 1
+    depends on ZMK_MAC_PROFILE
+
+config ZMK_MAC_PROFILE_LAYER
+    int "Keymap layer index of the Mac layer"
+    default 1
+    depends on ZMK_MAC_PROFILE
+
 config ZMK_KEEP_HFXO_ON
     bool "Keep the 32 MHz crystal (HFXO) running permanently"
     default n

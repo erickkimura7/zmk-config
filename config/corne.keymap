@@ -22,10 +22,14 @@
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/outputs.h>
 
-#define BASE   0
-#define LOWER  1
-#define RAISE  2
-#define ADJUST 3
+/* A ordem das camadas no bloco "keymap" abaixo TEM que seguir estes números.
+ * MAC = 1 também está em CONFIG_ZMK_MAC_PROFILE_LAYER (Kconfig do módulo). */
+#define BASE      0
+#define MAC       1
+#define LOWER     2
+#define RAISE     3
+#define MAC_LOWER 4
+#define ADJUST    5
 
 #define LEFT_KEYS   0 1 2 3 4 5 12 13 14 15 16 17 24 25 26 27 28 29
 #define RIGHT_KEYS  6 7 8 9 10 11 18 19 20 21 22 23 30 31 32 33 34 35
@@ -81,6 +85,10 @@
             if-layers = <LOWER RAISE>;
             then-layer = <ADJUST>;
         };
+        mac_lower_layer {
+            if-layers = <MAC LOWER>;
+            then-layer = <MAC_LOWER>;
+        };
     };
 
     keymap {
@@ -99,6 +107,20 @@
    &kp ESC  &hml LGUI A    &hml LALT S    &hml LCTRL D    &hml LSHFT F   &kp G     &kp H  &hmr RSHFT J   &hmr RCTRL K    &hmr LALT L    &hmr RGUI SEMI    &kp SQT
    &kp LSHFT &kp Z         &kp X          &kp C           &kp V          &kp B     &kp N  &kp M          &kp COMMA       &kp DOT        &kp FSLH          &caps_word
                                           &kp LGUI        &mo LOWER      &kp SPACE &kp RET &mo RAISE     &kp RALT
+            >;
+        };
+
+        mac_layer {
+            display-name = "Mac";
+// Liga sozinho no perfil Bluetooth 2 (Lower+Raise+S); também Lower+Raise+X.
+// Troca Ctrl <-> Cmd nos home row mods: K e D viram Cmd (copiar = K + C, igual
+// ao Windows), A e ; viram Control (Ctrl+C do terminal = ; + C).
+// | ESC  |A/CTL |S/OPT |D/CMD |F/SFT |  G   |   |  H   |J/SFT |K/CMD |L/OPT |;/CTL |  '   |
+            bindings = <
+   &trans  &trans         &trans         &trans          &trans         &trans    &trans &trans         &trans          &trans         &trans            &trans
+   &trans  &hml LCTRL A   &hml LALT S    &hml LGUI D     &hml LSHFT F   &trans    &trans &hmr RSHFT J   &hmr RGUI K     &hmr LALT L    &hmr RCTRL SEMI   &trans
+   &trans  &trans         &trans         &trans          &trans         &trans    &trans &trans         &trans          &trans         &trans            &trans
+                                         &trans          &trans         &trans    &trans &trans         &trans
             >;
         };
 
@@ -135,19 +157,34 @@
             >;
         };
 
+        mac_lower_layer {
+            display-name = "Mac Lower";
+// Ativa sozinha com Mac + Lower. Só muda o que é diferente no macOS:
+// | ESC  | CTRL | OPT  | CMD  | SHFT |      |   |      |      |      |      |      |      |
+// |      |⌘Z    |⌘X    |⌘C    |⌘V    |      |   |⌘LEFT |      |      |⌘RIGHT|      |      |
+// (⌘← / ⌘→ = início / fim da linha no Mac, no lugar de Home / End)
+            bindings = <
+   &trans  &trans      &trans      &trans      &trans      &trans    &trans        &trans  &trans  &trans         &trans  &trans
+   &trans  &kp LCTRL   &kp LALT    &kp LGUI    &kp LSHFT   &trans    &trans        &trans  &trans  &trans         &trans  &trans
+   &trans  &kp LG(Z)   &kp LG(X)   &kp LG(C)   &kp LG(V)   &trans    &kp LG(LEFT)  &trans  &trans  &kp LG(RIGHT)  &trans  &trans
+                                   &trans      &trans      &trans    &trans        &trans  &trans
+            >;
+        };
+
         adjust_layer {
             display-name = "Adjust";
 // ,------+------+------+------+------+------.   ,------+------+------+------+------+------.
 // |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |   |  F7  |  F8  |  F9  | F10  | F11  | F12  |
 // |BT CLR| BT1  | BT2  | BT3  | BT4  | BT5  |   | USB  | BLE  |VOL - |VOL + | MUTE |PRTSC |
-// |BOOTLD|RESET |      |      |      |      |   | PREV | PLAY | NEXT |      |RESET |BOOTLD|
+// |BOOTLD|RESET | MAC  |      |      |      |   | PREV | PLAY | NEXT |      |RESET |BOOTLD|
 // `------+------+------+------+------+------|   |------+------+------+------+------+------'
 //                      |      |      |      |   |      |      |      |
 // BOOTLD/RESET valem para a metade onde a tecla está (cada lado tem o seu).
+// MAC: liga/desliga o modo Mac na mão (ele já liga sozinho no perfil BT 2).
             bindings = <
    &kp F1        &kp F2        &kp F3        &kp F4        &kp F5        &kp F6         &kp F7          &kp F8          &kp F9          &kp F10         &kp F11     &kp F12
    &bt BT_CLR    &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4   &out OUT_USB    &out OUT_BLE    &kp C_VOL_DN    &kp C_VOL_UP    &kp C_MUTE  &kp PSCRN
-   &bootloader   &sys_reset    &trans        &trans        &trans        &trans         &kp C_PREV      &kp C_PP        &kp C_NEXT      &trans          &sys_reset  &bootloader
+   &bootloader   &sys_reset    &tog MAC      &trans        &trans        &trans         &kp C_PREV      &kp C_PP        &kp C_NEXT      &trans          &sys_reset  &bootloader
                                              &trans        &trans        &trans         &trans          &trans          &trans
             >;
         };
