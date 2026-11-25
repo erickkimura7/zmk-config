@@ -9,6 +9,15 @@ config ZMK_FORCE_DCDC_HV_OFF
       during ZMK. On clone boards without the REG0 inductor this can make the
       board unstable on battery. This option writes DCDCEN0 = 0 at boot.
 
+config ZMK_KEEP_HFXO_ON
+    bool "Keep the 32 MHz crystal (HFXO) running permanently"
+    default n
+    help
+      Needed with CONFIG_CLOCK_CONTROL_NRF_K32SRC_SYNTH on boards without a
+      32.768 kHz crystal: the synthesized LF clock is only accurate while the
+      HFXO runs. Without it BLE connections drop on battery (USB keeps the
+      HFXO on, which hides the problem). Costs about 0.25 mA.
+
 config ZMK_RESET_REASON_LOG
     bool "Store reset reasons in flash and print the history over the log"
     default n
