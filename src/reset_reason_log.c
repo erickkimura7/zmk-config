@@ -15,6 +15,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/fatal.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/logging/log_ctrl.h>
 #include <zephyr/settings/settings.h>
 #include <zephyr/sys/reboot.h>
 #include <soc.h>
