@@ -9,6 +9,17 @@ config ZMK_FORCE_DCDC_HV_OFF
       during ZMK. On clone boards without the REG0 inductor this can make the
       board unstable on battery. This option writes DCDCEN0 = 0 at boot.
 
+config ZMK_RESET_REASON_LOG
+    bool "Store reset reasons in flash and print the history over the log"
+    default n
+    depends on SETTINGS
+    select REBOOT
+    help
+      Records POWER->RESETREAS, VBUS presence and fatal-error code at every
+      boot (last 16 entries) in the settings partition. Use it to find out
+      why the board reboots while running without USB, then read the
+      history with the USB-logging build.
+
 config ZMK_FORCE_DCDC_OFF
     bool "Force nRF52840 REG1 DC/DC off at boot"
     default n
