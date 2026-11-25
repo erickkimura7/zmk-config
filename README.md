@@ -29,7 +29,7 @@ outra mão, então Ctrl+C = segurar **K** (Ctrl) e tocar **C**.
 O modo Mac liga sozinho quando o perfil Bluetooth 2 está selecionado (Lower + Raise + S),
 inclusive ao acordar do sono (módulo `src/mac_profile.c`). Na mão: Lower + Raise + X.
 - Cmd = segurar K ou D (copiar = K + C, igual ao Windows); Control = segurar ; ou A.
-- Lower + Z X C V = ⌘Z ⌘X ⌘C ⌘V; Lower + H / L = início / fim da linha (⌘← / ⌘→).
+- Lower + Z X C V = ⌘Z ⌘X ⌘C ⌘V; Lower + N / . = início / fim da linha (⌘← / ⌘→), no lugar de Home / End.
 - Acentos: no Mac use a fonte de entrada "U.S. International – PC".
 
 ### Bluetooth e USB
