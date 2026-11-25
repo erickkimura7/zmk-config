@@ -13,6 +13,9 @@ Uso:  python3 tools/keytest.py            # as duas metades (esquerda + direita 
 Sai:  sozinho quando todas as teclas forem testadas, após 120 s sem
       apertar nada, ou Ctrl+C num terminal/SSH.
 
+Home row mods: TOQUE as teclas (segurar vira Ctrl/Shift/Alt/GUI).
+Caps Word (CAPW) não envia tecla: não é contado, exceto no --right.
+
 Lower e Raise não enviam tecla sozinhos. Para testá-los:
   - Lower: segure Lower e aperte Q (deve sair "1").
   - Raise: segure Raise e aperte H (deve sair "-").
@@ -36,14 +39,14 @@ IDLE_TIMEOUT = 120
 # (rótulo, keycode Linux) — layout padrão do config/corne.keymap
 LEFT = [
     [("TAB", 15), ("Q", 16), ("W", 17), ("E", 18), ("R", 19), ("T", 20)],
-    [("CTL", 29), ("A", 30), ("S", 31), ("D", 32), ("F", 33), ("G", 34)],
+    [("ESC", 1), ("A", 30), ("S", 31), ("D", 32), ("F", 33), ("G", 34)],
     [("SFT", 42), ("Z", 44), ("X", 45), ("C", 46), ("V", 47), ("B", 48)],
     [None, None, None, ("GUI", 125), ("LWR", "lower"), ("SPC", 57)],
 ]
 RIGHT = [
     [("Y", 21), ("U", 22), ("I", 23), ("O", 24), ("P", 25), ("BSP", 14)],
     [("H", 35), ("J", 36), ("K", 37), ("L", 38), (";", 39), ("'", 40)],
-    [("N", 49), ("M", 50), (",", 51), (".", 52), ("/", 53), ("ESC", 1)],
+    [("N", 49), ("M", 50), (",", 51), (".", 52), ("/", 53), ("CAPW", "capsword")],
     [("ENT", 28), ("RSE", "raise"), ("ALT", 100), None, None, None],
 ]
 # Teclas que só existem na camada Lower / Raise -> provam que o Lower/Raise funciona
@@ -53,8 +56,8 @@ RAISE_ONLY = {12, 13, 26, 27, 41, 43}                    # - = [ ] ` \
 # --right: o firmware da esquerda lê a matriz da direita com as colunas espelhadas
 # (pino 14 = coluna Y, mas a esquerda chama de T). Converte keycode-esquerda -> tecla-direita.
 MIRROR = {20: 21, 19: 22, 18: 23, 17: 24, 16: 25, 15: 14,
-          34: 35, 33: 36, 32: 37, 31: 38, 30: 39, 29: 40,
-          48: 49, 47: 50, 46: 51, 45: 52, 44: 53, 42: 1,
+          34: 35, 33: 36, 32: 37, 31: 38, 30: 39, 1: 40,
+          48: 49, 47: 50, 46: 51, 45: 52, 44: 53, 42: "capsword",
           57: 28, 125: 100, "lower": "raise"}
 
 _unknown = [a for a in sys.argv[1:] if a not in ("--left", "--right")]
@@ -62,7 +65,8 @@ if _unknown:
     sys.exit(f"Opção desconhecida: {' '.join(_unknown)}  (use --left, --right ou nada)")
 MODE = "right" if "--right" in sys.argv else "left" if "--left" in sys.argv else "both"
 HALVES = {"both": (LEFT, RIGHT), "left": (LEFT,), "right": (RIGHT,)}[MODE]
-ALL_KEYS = [k for half in HALVES for row in half for k in row if k]
+ALL_KEYS = [k for half in HALVES for row in half for k in row
+            if k and (k[1] != "capsword" or MODE == "right")]
 KEY_BY_CODE = {code: label for label, code in ALL_KEYS if isinstance(code, int)}
 
 GREEN, RED, DIM, BOLD, RESET = "\033[42;30m", "\033[41;97m", "\033[2m", "\033[1m", "\033[0m"

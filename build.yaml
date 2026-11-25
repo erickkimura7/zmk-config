@@ -1,56 +1,21 @@
 # Matriz de build do GitHub Actions — gera um .uf2 por linha
 ---
 include:
+  # Firmwares de uso
   - board: nice_nano_v2
     shield: corne_left
   - board: nice_nano_v2
     shield: corne_right
-  # Firmware para limpar o pareamento BLE entre as metades (use se der problema)
+  # Limpa o pareamento BLE (use se as metades nao se conectarem)
   - board: nice_nano_v2
     shield: settings_reset
-  # Diagnostico: esquerda com log pela USB (serial /dev/ttyACM0). Nao usar no dia a dia.
+  # Diagnostico: mesmo firmware, mas com log pela USB (/dev/ttyACM0)
   - board: nice_nano_v2
     shield: corne_left
     snippet: zmk-usb-logging
     artifact-name: corne_left_logging
-  # Diagnostico: direita com log pela USB. Nao usar no dia a dia.
-  - board: nice_nano_v2
-    shield: corne_right
-    snippet: zmk-usb-logging
-    artifact-name: corne_right_logging
-  # Teste: direita com log e SEM DC-DC (regulador linear), para o problema na bateria.
-  - board: nice_nano_v2
-    shield: corne_right
-    snippet: zmk-usb-logging
-    cmake-args: -DCONFIG_BOARD_ENABLE_DCDC=n
-    artifact-name: corne_right_logging_nodcdc
-  # Direita SEM DC-DC e SEM log (versao para uso, se o teste do DC-DC ajudar na bateria).
-  - board: nice_nano_v2
-    shield: corne_right
-    cmake-args: -DCONFIG_BOARD_ENABLE_DCDC=n
-    artifact-name: corne_right_nodcdc
-  # Direita SEM DC-DC, VCC (ext-power) DESLIGADO e radio em +8 dBm: nao ha LED/OLED,
-  # e uma fuga no VCC do PCB derrubava o regulador na bateria.
-  - board: nice_nano_v2
-    shield: corne_right
-    cmake-args: -DCONFIG_BOARD_ENABLE_DCDC=n -DCONFIG_ZMK_EXT_POWER=n -DCONFIG_BT_CTLR_TX_PWR_PLUS_8=y
-    artifact-name: corne_right_nodcdc_novcc
-  # Direita com o modulo que FORCA os dois DC-DC desligados (REG0/HV e REG1),
-  # mesmo que o bootloader tenha ligado. Versao com log (le o estado no USB)
-  # e versao sem log (para o teste na bateria).
-  - board: nice_nano_v2
-    shield: corne_right
-    snippet: zmk-usb-logging
-    cmake-args: -DCONFIG_BOARD_ENABLE_DCDC=n -DCONFIG_ZMK_FORCE_DCDC_HV_OFF=y -DCONFIG_ZMK_FORCE_DCDC_OFF=y
-    artifact-name: corne_right_logging_dcdcoff
-  - board: nice_nano_v2
-    shield: corne_right
-    cmake-args: -DCONFIG_BOARD_ENABLE_DCDC=n -DCONFIG_ZMK_FORCE_DCDC_HV_OFF=y -DCONFIG_ZMK_FORCE_DCDC_OFF=y
-    artifact-name: corne_right_dcdcoff
-  # Diagnostico: direita com log + historico de motivos de reinicio gravado na
-  # flash (le o historico depois pelo USB). Config padrao da direita.
   - board: nice_nano_v2
     shield: corne_right
     snippet: zmk-usb-logging
     cmake-args: -DCONFIG_ZMK_RESET_REASON_LOG=y
-    artifact-name: corne_right_logging_resetlog
+    artifact-name: corne_right_logging
