@@ -29,9 +29,9 @@ include:
     shield: corne_right
     cmake-args: -DCONFIG_BOARD_ENABLE_DCDC=n
     artifact-name: corne_right_nodcdc
-  # Direita SEM DC-DC e com a saida VCC (ext-power) DESLIGADA: nao ha LED/OLED,
+  # Direita SEM DC-DC, VCC (ext-power) DESLIGADO e radio em +8 dBm: nao ha LED/OLED,
   # e uma fuga no VCC do PCB derrubava o regulador na bateria.
   - board: nice_nano_v2
     shield: corne_right
-    cmake-args: -DCONFIG_BOARD_ENABLE_DCDC=n -DCONFIG_ZMK_EXT_POWER=n
+    cmake-args: -DCONFIG_BOARD_ENABLE_DCDC=n -DCONFIG_ZMK_EXT_POWER=n -DCONFIG_BT_CTLR_TX_PWR_PLUS_8=y
     artifact-name: corne_right_nodcdc_novcc
