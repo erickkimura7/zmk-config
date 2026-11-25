@@ -18,3 +18,9 @@ include:
     shield: corne_right
     snippet: zmk-usb-logging
     artifact-name: corne_right_logging
+  # Teste: direita com log e SEM DC-DC (regulador linear), para o problema na bateria.
+  - board: nice_nano_v2
+    shield: corne_right
+    snippet: zmk-usb-logging
+    cmake-args: -DCONFIG_BOARD_ENABLE_DCDC=n
+    artifact-name: corne_right_logging_nodcdc
