@@ -25,6 +25,13 @@ Segurar A / S / D / F = GUI / Alt / Ctrl / Shift (e J / K / L / ; espelhado).
 Tocar digita a letra normalmente. Só vira modificador se a próxima tecla for da
 outra mão, então Ctrl+C = segurar **K** (Ctrl) e tocar **C**.
 
+### Mac (perfil 2)
+O modo Mac liga sozinho quando o perfil Bluetooth 2 está selecionado (Lower + Raise + S),
+inclusive ao acordar do sono (módulo `src/mac_profile.c`). Na mão: Lower + Raise + X.
+- Cmd = segurar K ou D (copiar = K + C, igual ao Windows); Control = segurar ; ou A.
+- Lower + Z X C V = ⌘Z ⌘X ⌘C ⌘V; Lower + H / L = início / fim da linha (⌘← / ⌘→).
+- Acentos: no Mac use a fonte de entrada "U.S. International – PC".
+
 ### Bluetooth e USB
 - Lower + Raise + A..G: perfil Bluetooth 1..5; Lower + Raise + ESC: apaga o perfil atual.
 - Lower + Raise + H: manda as teclas pelo **USB**; + J: pelo **Bluetooth**

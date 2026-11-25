@@ -164,7 +164,7 @@ td:first-child { font-family: var(--font-key); font-weight: 700; white-space: no
     <section class="card">
       <h2>Bluetooth e USB</h2>
       <table>
-        <tr><td>Trocar de PC</td><td><span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">A</span>…<span class="kbd">G</span> = perfil 1 a 5</td></tr>
+        <tr><td>Trocar de PC</td><td><span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">A</span>…<span class="kbd">G</span> = perfil 1 a 5. O <b>perfil 2</b> (<span class="kbd">S</span>) é o do Mac.</td></tr>
         <tr><td>Parear novo PC</td><td>Escolha um perfil livre e no PC adicione o dispositivo "Corne"</td></tr>
         <tr><td>Esquecer pareamento</td><td><span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">ESC</span> apaga o perfil atual</td></tr>
         <tr><td>Saída USB / BLE</td><td><span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">H</span> = USB, <span class="kbd">J</span> = Bluetooth. Útil para carregar no PC e digitar em outro.</td></tr>
@@ -179,6 +179,18 @@ td:first-child { font-family: var(--font-key); font-weight: 700; white-space: no
         <tr><td>Direita</td><td><span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">CAPW</span> (canto inferior direito)</td></tr>
         <tr><td>Depois</td><td>Aparece o drive <span class="kbd">NICENANO</span>. Copie o .uf2 da metade certa.</td></tr>
         <tr><td>Reiniciar metade</td><td><span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">Z</span> (esq.) ou <span class="kbd">/</span> (dir.)</td></tr>
+      </table>
+    </section>
+    <section class="card">
+      <h2>Mac (perfil 2)</h2>
+      <table>
+        <tr><td>Ligar</td><td>Automático no perfil 2 (<span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">S</span>), também ao acordar. Na mão: <span class="kbd">Lower</span> + <span class="kbd">Raise</span> + <span class="kbd">X</span>.</td></tr>
+        <tr><td>Cmd</td><td>Segure <span class="kbd">K</span> (ou <span class="kbd">D</span>). Copiar = <span class="kbd">K</span> + <span class="kbd">C</span>, igual ao Windows.</td></tr>
+        <tr><td>Control</td><td>Segure <span class="kbd">;</span> (ou <span class="kbd">A</span>). Terminal: <span class="kbd">;</span> + <span class="kbd">C</span> interrompe.</td></tr>
+        <tr><td>Option</td><td>Segure <span class="kbd">S</span> ou <span class="kbd">L</span>, como o Alt no Windows.</td></tr>
+        <tr><td>Lower + Z X C V</td><td>⌘Z ⌘X ⌘C ⌘V</td></tr>
+        <tr><td>Lower + H / L</td><td>início / fim da linha (⌘← / ⌘→)</td></tr>
+        <tr><td>Acentos</td><td>No Mac, use a fonte de entrada <b>U.S. International – PC</b>: as mesmas teclas mortas do Windows.</td></tr>
       </table>
     </section>
   </div>
@@ -209,7 +221,7 @@ const L = {
   adjust: [
     [["F1"],["F2"],["F3"],["F4"],["F5"],["F6"],["F7"],["F8"],["F9"],["F10"],["F11"],["F12"]],
     [["BT ✕"],["BT1"],["BT2"],["BT3"],["BT4"],["BT5"],["USB"],["BLE"],["Vol−"],["Vol+"],["Mudo"],["PrtSc"]],
-    [["Boot"],["Reset"],X,X,X,X,["⏮"],["⏯"],["⏭"],X,["Reset"],["Boot"]],
+    [["Boot"],["Reset"],["MAC"],X,X,X,["⏮"],["⏯"],["⏭"],X,["Reset"],["Boot"]],
     [X,X,X,X,X,X],
   ],
 };
@@ -221,7 +233,7 @@ const NOTES = {
   base: "Teclas com texto pequeno embaixo: tocar = letra, segurar = modificador.",
   lower: "Segure LOWER (polegar esquerdo do meio).",
   raise: "Segure RAISE (polegar direito do meio). ° = tecla morta: aperte Espaço depois para sair sozinha.",
-  adjust: "Segure LOWER e RAISE juntos. Boot = gravar firmware na metade da tecla.",
+  adjust: "Segure LOWER e RAISE juntos. Boot = gravar firmware na metade da tecla. MAC = liga/desliga o modo Mac.",
 };
 // Palavras extras para a busca
 const ALIAS = {
@@ -229,7 +241,7 @@ const ALIAS = {
   "desfazer": "Desfaz", "undo": "Desfaz", "setas": "←", "seta": "←", "esquerda": "←", "direita": "→", "cima": "↑", "baixo": "↓",
   "delete": "Del", "apagar": "⌫", "backspace": "⌫", "bksp": "⌫", "enter": "Enter", "espaco": "Espaço", "space": "Espaço",
   "volume": "Vol+", "mudo": "Mudo", "mute": "Mudo", "print": "PrtSc", "bootloader": "Boot", "boot": "Boot", "bluetooth": "BT1",
-  "usb": "USB", "ble": "BLE", "caps": "CAPW", "maiusculas": "CAPW", "pipe": "|", "crase": "`", "til": "~", "circunflexo": "^",
+  "usb": "USB", "ble": "BLE", "mac": "MAC", "modo mac": "MAC", "caps": "CAPW", "maiusculas": "CAPW", "pipe": "|", "crase": "`", "til": "~", "circunflexo": "^",
   "aspas": '"', "apostrofo": "'", "barra": "/", "contrabarra": "\\", "walrus": ":=", "arrow": "=>",
 };
 const ACCENTS = {
