@@ -1,0 +1,18 @@
+# Ajustes para clones "Pro Micro nRF52840" (compatíveis com nice!nano v2).
+
+config ZMK_FORCE_DCDC_HV_OFF
+    bool "Force nRF52840 REG0 (high-voltage) DC/DC off at boot"
+    default n
+    help
+      Zephyr only turns the REG0 DC/DC ON when SOC_DCDC_NRF52X_HV is set; it
+      never turns it off. If the bootloader left DCDCEN0 enabled, it stays on
+      during ZMK. On clone boards without the REG0 inductor this can make the
+      board unstable on battery. This option writes DCDCEN0 = 0 at boot.
+
+config ZMK_FORCE_DCDC_OFF
+    bool "Force nRF52840 REG1 DC/DC off at boot"
+    default n
+    depends on !SOC_DCDC_NRF52X
+    help
+      Same as above for REG1 (DCDCEN). Only allowed when the board's own DCDC
+      option is disabled (CONFIG_BOARD_ENABLE_DCDC=n).

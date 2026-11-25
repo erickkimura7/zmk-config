@@ -35,3 +35,15 @@ include:
     shield: corne_right
     cmake-args: -DCONFIG_BOARD_ENABLE_DCDC=n -DCONFIG_ZMK_EXT_POWER=n -DCONFIG_BT_CTLR_TX_PWR_PLUS_8=y
     artifact-name: corne_right_nodcdc_novcc
+  # Direita com o modulo que FORCA os dois DC-DC desligados (REG0/HV e REG1),
+  # mesmo que o bootloader tenha ligado. Versao com log (le o estado no USB)
+  # e versao sem log (para o teste na bateria).
+  - board: nice_nano_v2
+    shield: corne_right
+    snippet: zmk-usb-logging
+    cmake-args: -DCONFIG_BOARD_ENABLE_DCDC=n -DCONFIG_ZMK_FORCE_DCDC_HV_OFF=y -DCONFIG_ZMK_FORCE_DCDC_OFF=y
+    artifact-name: corne_right_logging_dcdcoff
+  - board: nice_nano_v2
+    shield: corne_right
+    cmake-args: -DCONFIG_BOARD_ENABLE_DCDC=n -DCONFIG_ZMK_FORCE_DCDC_HV_OFF=y -DCONFIG_ZMK_FORCE_DCDC_OFF=y
+    artifact-name: corne_right_dcdcoff
