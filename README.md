@@ -13,23 +13,24 @@ Sistema operacional configurado como **US Internacional**.
 | ã õ | `~` (Raise + ESC) e depois a letra |
 | â ê ô | `^` (Raise + Y) e depois a letra |
 | à | `` ` `` (Raise + TAB) e depois a letra |
-| ç | `'` e depois `c` (ou AltGr + `,`) |
+| ç | `'` e depois `c` |
 | `'` `"` `` ` `` `~` `^` sozinhos | a tecla e depois **Espaço** |
 | Números / setas | segurar **Lower** |
 | Símbolos de código | segurar **Raise** |
 | F1–F12, Bluetooth, mídia | segurar **Lower + Raise** |
 | CONSTANTE_EM_MAIUSCULA | tocar **CAPW** (canto inferior direito) e digitar |
 
-### Home row mods
-Segurar A / S / D / F = GUI / Alt / Ctrl / Shift (e J / K / L / ; espelhado).
-Tocar digita a letra normalmente. Só vira modificador se a próxima tecla for da
-outra mão, então Ctrl+C = segurar **K** (Ctrl) e tocar **C**.
+### Modificadores
+- **ESC** (à esquerda do A): tocar = Esc, segurar = Ctrl (Control no Mac). Ctrl+C = ESC + C.
+- Polegar esquerdo de fora = Win / **Cmd**; polegar direito de fora = Alt / **Option**.
+- Lower + ; / ' = aba anterior / próxima; Lower + / / CAPW = área de trabalho anterior / próxima.
 
-### Mac (perfil 2)
+### Trabalho no Mac (perfil 2)
 O modo Mac liga sozinho quando o perfil Bluetooth 2 está selecionado (Lower + Raise + S),
 inclusive ao acordar do sono (módulo `src/mac_profile.c`). Na mão: Lower + Raise + X.
-- Cmd = segurar K ou D (copiar = K + C, igual ao Windows); Control = segurar ; ou A.
-- Lower + Z X C V = ⌘Z ⌘X ⌘C ⌘V; Lower + N / . = início / fim da linha (⌘← / ⌘→), no lugar de Home / End.
+- Cmd = polegar esquerdo de fora (Cmd+C, Cmd+clique, Cmd+Tab); Control = segurar ESC.
+- Lower + Z X C V = ⌘Z ⌘X ⌘C ⌘V; Lower + N / . = início / fim da linha (⌘← / ⌘→).
+- Lower + ; / ' = abas do iTerm (⌘⇧[ / ⌘⇧]); Lower + / / CAPW = Spaces (Ctrl+← / →).
 - Acentos: no Mac use a fonte de entrada "U.S. International – PC".
 
 ### Bluetooth e USB
