@@ -13,7 +13,6 @@ Uso:  python3 tools/keytest.py            # as duas metades (esquerda + direita 
 Sai:  sozinho quando todas as teclas forem testadas, após 120 s sem
       apertar nada, ou Ctrl+C num terminal/SSH.
 
-Home row mods: TOQUE as teclas (segurar vira Ctrl/Shift/Alt/GUI).
 Caps Word (CAPW) não envia tecla: não é contado, exceto no --right.
 
 Lower e Raise não enviam tecla sozinhos. Para testá-los:
@@ -47,7 +46,7 @@ RIGHT = [
     [("Y", 21), ("U", 22), ("I", 23), ("O", 24), ("P", 25), ("BSP", 14)],
     [("H", 35), ("J", 36), ("K", 37), ("L", 38), (";", 39), ("'", 40)],
     [("N", 49), ("M", 50), (",", 51), (".", 52), ("/", 53), ("CAPW", "capsword")],
-    [("ENT", 28), ("RSE", "raise"), ("ALT", 100), None, None, None],
+    [("ENT", 28), ("RSE", "raise"), ("ALT", 56), None, None, None],
 ]
 # Teclas que só existem na camada Lower / Raise -> provam que o Lower/Raise funciona
 LOWER_ONLY = set(range(2, 12)) | {103, 105, 106, 108}  # 1..0 e setas
@@ -58,7 +57,7 @@ RAISE_ONLY = {12, 13, 26, 27, 41, 43}                    # - = [ ] ` \
 MIRROR = {20: 21, 19: 22, 18: 23, 17: 24, 16: 25, 15: 14,
           34: 35, 33: 36, 32: 37, 31: 38, 30: 39, 1: 40,
           48: 49, 47: 50, 46: 51, 45: 52, 44: 53, 42: "capsword",
-          57: 28, 125: 100, "lower": "raise"}
+          57: 28, 125: 56, "lower": "raise"}
 
 _unknown = [a for a in sys.argv[1:] if a not in ("--left", "--right")]
 if _unknown:
